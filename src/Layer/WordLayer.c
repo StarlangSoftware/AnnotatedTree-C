@@ -1,0 +1,93 @@
+//
+// Created by Olcay Taner YILDIZ on 6.12.2023.
+//
+#include <Memory/Memory.h>
+#include <StringUtils.h>
+#include <MetamorphicParse.h>
+#include <string.h>
+#include <MorphologicalParse.h>
+#include <stdio.h>
+#include "WordLayer.h"
+
+void free_word_layer(Word_layer_ptr word_layer) {
+    free_(word_layer->layer_value);
+    if (word_layer->items != NULL){
+        if (string_in_list(word_layer->layer_name, (char*[]){"metaMorphemes", "metaMorphemesMoved"}, 2)){
+            free_array_list(word_layer->items, (void (*)(void *)) free_metamorphic_parse);
+        } else {
+            if (strcmp(word_layer->layer_name, "morphologicalAnalysis") == 0){
+                free_array_list(word_layer->items, (void (*)(void *)) free_morphological_parse);
+            } else {
+                if (strcmp(word_layer->layer_name, "englishPropbank") == 0){
+                    free_array_list(word_layer->items, (void (*)(void *)) free_argument);
+                } else {
+                    free_array_list(word_layer->items, free_);
+                }
+            }
+        }
+    }
+    free_(word_layer->layer_name);
+    free_(word_layer);
+}
+
+Word_layer_ptr create_morpheme_layer(const char *layer_value, const char *layer_name) {
+    Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_morpheme_layer");
+    result->layer_name = str_copy(result->layer_name, layer_name);
+    result->layer_value = str_copy(result->layer_value, layer_value);
+    if (layer_value != NULL){
+        result->items = create_array_list();
+        Array_list_ptr split_words = str_split(layer_value, ' ');
+        for (int i = 0; i < split_words->size; i++){
+            array_list_add(result->items, create_metamorphic_parse(array_list_get(split_words, i)));
+        }
+        free_array_list(split_words, free_);
+    } else {
+        result->items = NULL;
+    }
+    return result;
+}
+
+int get_word_layer_size(Word_layer_ptr word_layer, View_layer_type view_layer) {
+    int size = 0;
+    if (string_in_list(word_layer->layer_name, (char*[]){"metaMorphemes", "metaMorphemesMoved"}, 2)){
+        for (int i = 0; i < word_layer->items->size; i++){
+            Metamorphic_parse_ptr parse = array_list_get(word_layer->items, i);
+            size += parse->meta_morpheme_list->size;
+        }
+    } else {
+        if (strcmp(word_layer->layer_name, "morphologicalAnalysis") == 0){
+            switch (view_layer) {
+                case PART_OF_SPEECH:
+                    for (int i = 0; i < word_layer->items->size; i++){
+                        Morphological_parse_ptr parse = array_list_get(word_layer->items, i);
+                        size += tag_size(parse);
+                    }
+                    break;
+                case INFLECTIONAL_GROUP:
+                    for (int i = 0; i < word_layer->items->size; i++){
+                        Morphological_parse_ptr parse = array_list_get(word_layer->items, i);
+                        size += parse->inflectional_groups->size;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return size;
+}
+
+Named_entity_type get_named_entity(Word_layer_ptr word_layer) {
+    return get_named_entity_type(word_layer->layer_value);
+}
+
+Argument_ptr get_argument(Word_layer_ptr word_layer) {
+    return create_argument2(word_layer->layer_value);
+}
+
+char *get_word_layer_description(Word_layer_ptr word_layer) {
+    char tmp[MAX_WORD_LENGTH];
+    sprintf(tmp, "{%s=%s}", word_layer->layer_name, word_layer->layer_value);
+    return clone_string(tmp);
+}
+
