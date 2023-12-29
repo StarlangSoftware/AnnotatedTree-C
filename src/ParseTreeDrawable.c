@@ -7,6 +7,8 @@
 #include <FileUtils.h>
 #include <string.h>
 #include "ParseTreeDrawable.h"
+#include "Processor/NodeDrawableCollector.h"
+#include "Processor/Condition/IsTurkishLeafNode.h"
 
 Parse_tree_drawable_ptr create_parse_tree_drawable(File_description_ptr file_description) {
     Parse_tree_drawable_ptr result = malloc_(sizeof(Parse_tree_drawable), "create_parse_tree_drawable");
@@ -72,4 +74,17 @@ Parse_tree_ptr generate_parse_tree(const Parse_tree_drawable *parse_tree, bool s
     Parse_tree_ptr result = create_parse_tree2(create_parse_node(clone_string(parse_tree->root->data)));
     generate_parse_node(parse_tree->root, result->root, surface_form);
     return result;
+}
+
+Sentence_ptr generate_annotated_sentence(const Parse_tree_drawable *parse_tree) {
+    Sentence_ptr sentence = create_sentence();
+    Array_list_ptr leaf_list = collect(parse_tree->root, is_turkish_leaf_node);
+    for (int i = 0; i < leaf_list->size; i++){
+        Parse_node_drawable_ptr parse_node = array_list_get(leaf_list, i);
+        for (int j = 0; j < get_number_of_words(parse_node->layers); j++){
+            array_list_add(sentence->words, to_annotated_word(parse_node->layers, j));
+        }
+    }
+    free_array_list(leaf_list, NULL);
+    return sentence;
 }

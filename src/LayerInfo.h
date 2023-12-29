@@ -85,4 +85,6 @@ void english_semantic_clear(Layer_info_ptr layer_info);
 
 void morphological_analysis_clear(Layer_info_ptr layer_info);
 
+Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int wordIndex);
+
 #endif //ANNOTATEDTREE_LAYERINFO_H

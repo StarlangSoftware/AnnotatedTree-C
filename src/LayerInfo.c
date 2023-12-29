@@ -356,3 +356,27 @@ void morphological_analysis_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, META_MORPHEME);
     remove_layer(layer_info, META_MORPHEME_MOVED);
 }
+
+Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int wordIndex) {
+    Annotated_word_ptr word = create_annotated_word(get_turkish_word_at(layer_info, wordIndex));
+    if (layer_exists(layer_info, INFLECTIONAL_GROUP)){
+        word->parse = get_morphological_parse_at(layer_info, wordIndex);
+    }
+    if (layer_exists(layer_info, META_MORPHEME)){
+        word->metamorphic_parse = get_metamorphic_parse_at(layer_info, wordIndex);
+    }
+    if (layer_exists(layer_info, SEMANTICS)){
+        word->semantic = get_semantic_at(layer_info, wordIndex);
+    }
+    if (layer_exists(layer_info, NER)){
+        word->named_entity_type = get_named_entity_type(get_layer_data(layer_info, NER));
+    }
+    if (layer_exists(layer_info, PROPBANK)){
+        word->argument = get_layer_argument(layer_info);
+    }
+    if (layer_exists(layer_info, SHALLOW_PARSE)){
+        word->shallow_parse = get_shallow_parse_at(layer_info, wordIndex);
+    }
+    return word;
+}
+

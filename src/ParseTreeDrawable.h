@@ -7,6 +7,7 @@
 
 #include <FileDescription.h>
 #include <ParseTree.h>
+#include <Sentence.h>
 #include "ParseNodeDrawable.h"
 
 struct parse_tree_drawable {
@@ -41,5 +42,7 @@ void tree_clear_layer(Parse_tree_drawable_ptr parse_tree, View_layer_type layer_
 int compare_parse_tree_drawable(const Parse_tree_drawable *parse_tree1, const Parse_tree_drawable *parse_tree2);
 
 Parse_tree_ptr generate_parse_tree(const Parse_tree_drawable *parse_tree, bool surface_form);
+
+Sentence_ptr generate_annotated_sentence(const Parse_tree_drawable *parse_tree);
 
 #endif //ANNOTATEDTREE_PARSETREEDRAWABLE_H
