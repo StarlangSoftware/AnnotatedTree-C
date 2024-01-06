@@ -16,7 +16,7 @@ void check_depth(Tree_bank_ptr tree_bank, int index, int depth){
 }
 
 int main(){
-    Tree_bank_ptr tree_bank = create_tree_bank_drawable("../../trees");
+    Tree_bank_ptr tree_bank = create_tree_bank_drawable("../trees");
     check_depth(tree_bank, 0, 5);
     check_depth(tree_bank, 1, 5);
     check_depth(tree_bank, 2, 5);
@@ -27,7 +27,7 @@ int main(){
     check_depth(tree_bank, 7, 6);
     check_depth(tree_bank, 8, 5);
     check_depth(tree_bank, 9, 6);
-    Parse_tree_drawable_ptr parse_tree = create_parse_tree_drawable2("../../trees", "0000.dev");
+    Parse_tree_drawable_ptr parse_tree = create_parse_tree_drawable2("../trees", "0000.dev");
     Parse_tree_ptr parse_tree2 = generate_parse_tree(parse_tree, true);
     String_ptr st = parse_tree_to_string(parse_tree2);
     if (strcmp(st->s, "(S (NP (NP (ADJP (ADJP yeni) (ADJP Büyük))  (NP yasada))  (NP (ADJP karmaşık) (NP dil)) )  (VP (NP savaşı) (VP bulandırmıştır))  (. .)) ") != 0){
