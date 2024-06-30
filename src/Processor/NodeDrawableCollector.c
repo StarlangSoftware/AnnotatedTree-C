@@ -5,6 +5,12 @@
 #include <stddef.h>
 #include "NodeDrawableCollector.h"
 
+/**
+ * Recursive method to check all descendants of the parseNode, if they ever satisfy the given node condition
+ * @param parse_node Root node of the subtree
+ * @param collected The {@link ArrayList} where the collected ParseNode's will be stored.
+ * @param node_condition Condition to check
+ */
 void collect_nodes(Parse_node_drawable_ptr parse_node,
                    Array_list_ptr collected,
                    bool (*node_condition)(const Parse_node_drawable *)) {
@@ -16,6 +22,13 @@ void collect_nodes(Parse_node_drawable_ptr parse_node,
     }
 }
 
+/**
+ * Recursive method to check all descendants of the parseNode, if they ever satisfy the given node condition
+ * @param parse_node Root node of the subtree
+ * @param collected The {@link ArrayList} where the collected ParseNode's will be stored.
+ * @param node_condition Condition to check
+ * @param data Data used in the condition
+ */
 void collect_nodes2(Parse_node_drawable_ptr parse_node,
                     Array_list_ptr collected,
                     bool (*node_condition)(const Parse_node_drawable *, const void *),
@@ -28,12 +41,23 @@ void collect_nodes2(Parse_node_drawable_ptr parse_node,
     }
 }
 
+/**
+ * Collects and returns all ParseNodes satisfying the node condition.
+ * @param node_condition Condition to check
+ * @return All ParseNodes satisfying the node condition.
+ */
 Array_list_ptr collect(Parse_node_drawable_ptr root_node, bool (*node_condition)(const Parse_node_drawable *)) {
     Array_list_ptr result = create_array_list();
     collect_nodes(root_node, result, node_condition);
     return result;
 }
 
+/**
+ * Collects and returns all ParseNodes satisfying the node condition.
+ * @param node_condition Condition to check
+ * @param data Data used in the condition
+ * @return All ParseNodes satisfying the node condition.
+ */
 Array_list_ptr collect2(Parse_node_drawable_ptr root_node,
                         bool (*node_condition)(const Parse_node_drawable *, const void *),
                         void *data) {

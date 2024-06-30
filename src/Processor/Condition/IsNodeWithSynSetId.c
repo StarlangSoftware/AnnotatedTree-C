@@ -6,6 +6,12 @@
 #include "IsNodeWithSynSetId.h"
 #include "IsLeafNode.h"
 
+/**
+ * Checks if at least one of the semantic ids of the parse node is equal to the given id.
+ * @param id Synset id to check
+ * @param parse_node Parse node to check.
+ * @return True if at least one of the semantic ids of the parse node is equal to the given id, false otherwise.
+ */
 bool is_node_with_syn_set_id(const Parse_node_drawable *parse_node, const char *id) {
     if (is_leaf_node(parse_node)){
         Layer_info_ptr layer_info = parse_node->layers;

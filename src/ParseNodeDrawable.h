@@ -23,7 +23,7 @@ typedef Parse_node_drawable * Parse_node_drawable_ptr;
 
 Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr parent,
                                                    char* line,
-                                                   bool isLeaf,
+                                                   bool is_leaf,
                                                    int depth);
 
 Parse_node_drawable_ptr create_parse_node_drawable2(char* line);

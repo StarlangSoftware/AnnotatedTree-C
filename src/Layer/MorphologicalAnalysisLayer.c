@@ -7,6 +7,12 @@
 #include <MorphologicalParse.h>
 #include "MorphologicalAnalysisLayer.h"
 
+/**
+ * Constructor for the morphological analysis layer. Sets the morphological parse information for multiple words in
+ * the node.
+ * @param layer_value Layer value for the morphological parse information. Consists of morphological parse information
+ *                   of multiple words separated via space character.
+ */
 Word_layer_ptr create_morphological_analysis_layer(const char *layer_value) {
     Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_morphological_analysis_layer");
     result->layer_name = str_copy(result->layer_name, "morphologicalAnalysis");

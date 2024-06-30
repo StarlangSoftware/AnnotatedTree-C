@@ -7,6 +7,11 @@
 #include "IsTurkishLeafNode.h"
 #include "IsLeafNode.h"
 
+/**
+ * Checks if the parse node is a leaf node and contains a valid Turkish word in its data.
+ * @param parse_node Parse node to check.
+ * @return True if the parse node is a leaf node and contains a valid Turkish word in its data; false otherwise.
+ */
 bool is_turkish_leaf_node(const Parse_node_drawable *parse_node) {
     if (is_leaf_node(parse_node)){
         char* data = get_layer_data(parse_node->layers, TURKISH_WORD);

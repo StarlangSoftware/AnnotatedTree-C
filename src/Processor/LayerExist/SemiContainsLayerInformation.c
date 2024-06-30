@@ -7,6 +7,13 @@
 #include "../../ParseNodeDrawable.h"
 #include "../Condition/IsTurkishLeafNode.h"
 
+/**
+ * Checks if some (but not all) of the leaf nodes in the leafList contains the given layer information.
+ * @param leaf_list Array list storing the leaf nodes.
+ * @param layer_type Layer for which check is done.
+ * @return True if some (but not all) of the leaf nodes in the leafList contains the given layer information, false
+ * otherwise.
+ */
 bool semi_contains_layer_information(Array_list_ptr leaf_list, View_layer_type layer_type) {
     int not_done = 0, done = 0;
     for (int i = 0; i < leaf_list->size; i++){

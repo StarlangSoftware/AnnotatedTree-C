@@ -8,9 +8,17 @@
 #include <FileUtils.h>
 #include "ParseNodeDrawable.h"
 
+/**
+ * Constructs a ParseNodeDrawable from a single line. If the node is a leaf node, it only sets the data. Otherwise,
+ * splits the line w.r.t. spaces and parenthesis and calls itself recursively to generate its child parseNodes.
+ * @param parent The parent node of this node.
+ * @param line The input line to create this parseNode.
+ * @param is_leaf True, if this node is a leaf node; false otherwise.
+ * @param depth Depth of the node.
+ */
 Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr parent,
                                                    char *line,
-                                                   bool isLeaf,
+                                                   bool is_leaf,
                                                    int depth) {
     Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable), "create_parse_node_drawable");
     int parenthesisCount = 0;
@@ -20,7 +28,7 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
     result->layers = NULL;
     result->data = NULL;
     char childLine[MAX_LINE_LENGTH] = "";
-    if (isLeaf){
+    if (is_leaf){
         if (!str_contains(line, "{")){
             result->data = str_copy(result->data, line);
         } else {
@@ -77,10 +85,19 @@ char *get_data2(Parse_node_drawable_ptr parse_node) {
     }
 }
 
+/**
+ * Clears the layers hash map.
+ * @param parse_node Current parse node object
+ */
 void clear_layers(Parse_node_drawable_ptr parse_node) {
     parse_node->layers = create_layer_info2();
 }
 
+/**
+ * Recursive method to clear a given layer.
+ * @param parse_node Current parse node object
+ * @param layer_type Name of the layer to be cleared
+ */
 void clear_layer(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     if (parse_node->children->size == 0 && layer_exists(parse_node->layers, layer_type)){
         remove_layer(parse_node->layers, layer_type);
@@ -91,11 +108,20 @@ void clear_layer(Parse_node_drawable_ptr parse_node, View_layer_type layer_type)
     }
 }
 
+/**
+ * Clears the node tag.
+ * @param parse_node Current parse node object
+ */
 void clear_data(Parse_node_drawable_ptr parse_node) {
     free_(parse_node->data);
     parse_node->data = NULL;
 }
 
+/**
+ * Setter for the data attribute and also clears all layers.
+ * @param parse_node Current parse node object
+ * @param data New data field.
+ */
 void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, char *data) {
     free_(parse_node->data);
     parse_node->data = str_copy(parse_node->data, data);
@@ -105,6 +131,12 @@ void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, char *data) {
     }
 }
 
+/**
+ * Mutator for the data field. If the layers is null, its sets the data field, otherwise it sets the English layer
+ * to the given value.
+ * @param parse_node Current parse node object
+ * @param data Data to be set.
+ */
 void set_data(Parse_node_drawable_ptr parse_node, char *data) {
     if (parse_node->layers == NULL){
         free_(parse_node->data);
@@ -114,6 +146,12 @@ void set_data(Parse_node_drawable_ptr parse_node, char *data) {
     }
 }
 
+/**
+ * Returns the layer value of a given layer.
+ * @param parse_node Current parse node object
+ * @param layer_type Layer name
+ * @return Value of the given layer
+ */
 char* get_parse_node_layer_data(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     if (layer_type == WORD || parse_node->layers == NULL){
         return parse_node->data;
@@ -121,6 +159,11 @@ char* get_parse_node_layer_data(Parse_node_drawable_ptr parse_node, View_layer_t
     return get_layer_data(parse_node->layers, layer_type);
 }
 
+/**
+ * Recursive method which updates the depth attribute
+ * @param parse_node Current parse node object
+ * @param depth Current depth to set.
+ */
 void update_depths(Parse_node_drawable_ptr parse_node, int depth) {
     parse_node->depth = depth;
     for (int i = 0; i < parse_node->children->size; i++){
@@ -141,6 +184,11 @@ void free_parse_node_drawable(Parse_node_drawable_ptr parse_node) {
     }
 }
 
+/**
+ * Calculates the maximum depth of the subtree rooted from this node.
+ * @param parse_node Current parse node object
+ * @return The maximum depth of the subtree rooted from this node.
+ */
 int max_depth(Parse_node_drawable_ptr parse_node) {
     int depth = parse_node->depth;
     for (int i = 0; i < parse_node->children->size; i++){
@@ -152,6 +200,14 @@ int max_depth(Parse_node_drawable_ptr parse_node) {
     return depth;
 }
 
+/**
+ * Recursive method that checks if all nodes in the subtree rooted with this node has the annotation in the given
+ * layer.
+ * @param parse_node Current parse node object
+ * @param layer_type Layer name
+ * @return True if all nodes in the subtree rooted with this node has the annotation in the given layer, false
+ * otherwise.
+ */
 bool parse_node_layer_exists(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     if (parse_node->children->size == 0){
         if (get_parse_node_layer_data(parse_node, layer_type) != NULL){
@@ -168,6 +224,13 @@ bool parse_node_layer_exists(Parse_node_drawable_ptr parse_node, View_layer_type
     return false;
 }
 
+/**
+ * Checks if all nodes in the subtree rooted with this node has annotation with the given layer.
+ * @param parse_node Current parse node object
+ * @param viewLayerType Layer name
+ * @return True if all nodes in the subtree rooted with this node has annotation with the given layer, false
+ * otherwise.
+ */
 bool layer_all(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     if (parse_node->children->size == 0){
         if (get_parse_node_layer_data(parse_node, layer_type) == NULL && !is_dummy_node2(parse_node)){
@@ -184,6 +247,12 @@ bool layer_all(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     return true;
 }
 
+/**
+ * Checks if the current node is a dummy node or not. A node is a dummy node if its data contains '*', or its
+ * data is '0' and its parent is '-NONE-'.
+ * @param parse_node Current parse node object
+ * @return True if the current node is a dummy node, false otherwise.
+ */
 bool is_dummy_node2(Parse_node_drawable_ptr parse_node) {
     char* data = get_layer_data(parse_node->layers, ENGLISH_WORD);
     char* parent_data = get_layer_data(parse_node->parent->layers, ENGLISH_WORD);
@@ -198,6 +267,12 @@ bool is_dummy_node2(Parse_node_drawable_ptr parse_node) {
     }
 }
 
+/**
+ * Recursive method to convert the subtree rooted with this node to a string. All parenthesis types are converted to
+ * their regular forms.
+ * @param parse_node Current parse node object
+ * @return String version of the subtree rooted with this node.
+ */
 char *to_turkish_sentence(Parse_node_drawable_ptr parse_node) {
     char tmp[MAX_WORD_LENGTH];
     if (parse_node->children->size == 0){
@@ -219,6 +294,13 @@ char *to_turkish_sentence(Parse_node_drawable_ptr parse_node) {
     }
 }
 
+/**
+ * Recursive method that sets the tag information of the given parse node with all descendants with respect to the
+ * morphological annotation of the current node with all descendants.
+ * @param parse_node_drawable Current parse node object
+ * @param parse_node Parse node whose tag information will be changed.
+ * @param surface_form If true, tag will be replaced with the surface form annotation.
+ */
 void generate_parse_node(Parse_node_drawable_ptr parse_node_drawable,
                          Parse_node_ptr parse_node,
                          bool surface_form) {

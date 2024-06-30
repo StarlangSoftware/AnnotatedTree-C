@@ -7,6 +7,12 @@
 #include "IsNumber.h"
 #include "IsLeafNode.h"
 
+/**
+ * Checks if the node is a leaf node and contains numerals as the data and its parent has the tag CD.
+ * @param parse_node Parse node to check.
+ * @return True if the node is a leaf node and contains numerals as the data and its parent has the tag CD, false
+ * otherwise.
+ */
 bool is_number_node(const Parse_node_drawable *parse_node) {
     if (is_leaf_node(parse_node)){
         char* data = get_layer_data(parse_node->layers, ENGLISH_WORD);

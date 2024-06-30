@@ -7,6 +7,11 @@
 #include <Argument.h>
 #include "EnglishPropbankLayer.h"
 
+/**
+ * Constructor for the propbank layer for English language. Value may consist of multiple propbank information separated
+ * via '#' character. Each propbank value consists of argumentType and id info separated via '$' character.
+ * @param layer_value Value for the English propbank layer.
+ */
 Word_layer_ptr create_english_propbank_layer(const char *layer_value) {
     Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_english_propbank_layer");
     result->layer_name = str_copy(result->layer_name, "englishPropbank");

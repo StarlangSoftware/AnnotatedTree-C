@@ -7,6 +7,14 @@
 #include <stdio.h>
 #include "LeafToLanguageConverter.h"
 
+/**
+ * Converts the data in the leaf node to string, except shortcuts to parentheses are converted to its normal forms,
+ * '*', '0', '-NONE-' are converted to empty string.
+ * @param leaf_node Node to be converted to string.
+ * @param layer_type Layer for which conversion done.
+ * @return String form of the data, except shortcuts to parentheses are converted to its normal forms,
+ * '*', '0', '-NONE-' are converted to empty string.
+ */
 char *leaf_converter(Parse_node_drawable_ptr leaf_node, View_layer_type layer_type) {
     char* layerData = get_parse_node_layer_data(leaf_node, layer_type);
     char* parentLayerData = get_parse_node_layer_data(leaf_node->parent, layer_type);

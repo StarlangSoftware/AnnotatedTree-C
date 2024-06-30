@@ -5,6 +5,13 @@
 #include "IsVerbNode.h"
 #include "IsLeafNode.h"
 
+/**
+ * Checks if the node is a leaf node and at least one of the semantic ids of the parse node belong to a verb synset.
+ * @param parse_node Parse node to check.
+ * @param word_net Wordnet used for checking the pos tag of the synset.
+ * @return True if the node is a leaf node and at least one of the semantic ids of the parse node belong to a verb
+ * synset, false otherwise.
+ */
 bool is_verb_node(Parse_node_drawable *parse_node, Word_net_ptr word_net) {
     Layer_info_ptr layer_info = parse_node->layers;
     if (is_leaf_node(parse_node) && layer_info != NULL && get_layer_data(layer_info, SEMANTICS) != NULL){

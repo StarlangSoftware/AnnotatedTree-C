@@ -8,6 +8,13 @@
 #include "LeafConverter/LeafToLanguageConverter.h"
 #include "LeafConverter/LeafToRootFormConverter.h"
 
+/**
+ * Converts recursively a parse node to a string. If it is a leaf node, calls the converter's leafConverter method,
+ * otherwise concatenates the converted strings of its children.
+ * @param parse_node Parse node to convert to string.
+ * @param layer_type Layer for which conversion done.
+ * @return String form of the parse node and all of its descendants.
+ */
 char *convert_to_string(Parse_node_drawable_ptr parse_node, View_layer_type layer_type) {
     if (parse_node->children->size == 0){
         switch (layer_type) {
@@ -30,6 +37,12 @@ char *convert_to_string(Parse_node_drawable_ptr parse_node, View_layer_type laye
     }
 }
 
+/**
+ * Calls the convertToString method with root of the tree to convert the parse tree to string.
+ * @param parse_tree Parse tree to convert.
+ * @param layer_type Layer for which conversion done.
+ * @return String form of the parse tree.
+ */
 char *convert(Parse_tree_drawable_ptr parse_tree, View_layer_type layer_type) {
     return convert_to_string(parse_tree->root, layer_type);
 }

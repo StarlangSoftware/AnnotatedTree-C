@@ -6,6 +6,13 @@
 #include <stdio.h>
 #include "LeafToRootFormConverter.h"
 
+/**
+ * Converts the data in the leaf node to string. If there are multiple words in the leaf node, they are concatenated
+ * with space.
+ * @param parse_node Node to be converted to string.
+ * @return String form of the data. If there are multiple words in the leaf node, they are concatenated
+ * with space.
+ */
 char *leaf_to_root_form_converter(Parse_node_drawable_ptr parse_node) {
     Layer_info_ptr layer_info = parse_node->layers;
     char root_words[MAX_WORD_LENGTH] = "";

@@ -9,6 +9,10 @@
 #include <stdio.h>
 #include "WordLayer.h"
 
+/**
+ * Frees memory allocated for a word layer. If the layer contains multiple items, items array list will be deallocated.
+ * @param word_layer Word layer to be deallocated.
+ */
 void free_word_layer(Word_layer_ptr word_layer) {
     free_(word_layer->layer_value);
     if (word_layer->items != NULL){
@@ -30,6 +34,12 @@ void free_word_layer(Word_layer_ptr word_layer) {
     free_(word_layer);
 }
 
+/**
+ * Creates a metamorpheme or metamorphemesmoved layer from the given layer value.
+ * @param layer_value Value for the word layer.
+ * @param layer_name Name of the layer
+ * @return New metamorpheme or metamorphemesmoved layer
+ */
 Word_layer_ptr create_morpheme_layer(const char *layer_value, const char *layer_name) {
     Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_morpheme_layer");
     result->layer_name = str_copy(result->layer_name, layer_name);
@@ -47,6 +57,15 @@ Word_layer_ptr create_morpheme_layer(const char *layer_value, const char *layer_
     return result;
 }
 
+/**
+ * For morphological analysis layer, returns the total number of morphological tags (for PART_OF_SPEECH) or inflectional
+ * groups (for INFLECTIONAL_GROUP) in the words in the node. For metamorphic parse layer, Returns the total number of
+ * metamorphemes in the words in the node.
+ * @param viewLayer Layer type.
+ * @return For morphological analysis layer, total number of morphological tags (for PART_OF_SPEECH) or inflectional
+ * groups (for INFLECTIONAL_GROUP) in the words in the node. For metamorphic parse layer, Returns the total number of
+ * metamorphemes in the words in the node.
+ */
 int get_word_layer_size(Word_layer_ptr word_layer, View_layer_type view_layer) {
     int size = 0;
     if (string_in_list(word_layer->layer_name, (char*[]){"metaMorphemes", "metaMorphemesMoved"}, 2)){
@@ -77,10 +96,20 @@ int get_word_layer_size(Word_layer_ptr word_layer, View_layer_type view_layer) {
     return size;
 }
 
+/**
+ * Get the named entity value.
+ * @param word_layer Word layer
+ * @return Named entity value.
+ */
 Named_entity_type get_named_entity(Word_layer_ptr word_layer) {
     return get_named_entity_type(word_layer->layer_value);
 }
 
+/**
+ * Get the argument value.
+ * @param word_layer Word layer
+ * @return Argument value.
+ */
 Argument_ptr get_argument(Word_layer_ptr word_layer) {
     return create_argument2(word_layer->layer_value);
 }

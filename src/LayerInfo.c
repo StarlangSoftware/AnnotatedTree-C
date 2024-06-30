@@ -22,6 +22,14 @@
 #include "Layer/EnglishSemanticLayer.h"
 #include "Layer/ShallowParseLayer.h"
 
+/**
+ * Constructs the layer information from the given string. Layers are represented as
+ * {layername1=layervalue1}{layername2=layervalue2}...{layernamek=layervaluek} where layer name is one of the
+ * following: turkish, persian, english, morphologicalAnalysis, metaMorphemes, metaMorphemesMoved, dependency,
+ * semantics, namedEntity, propBank, englishPropbank, englishSemantics, shallowParse. Splits the string w.r.t.
+ * parentheses and constructs layer objects and put them layers map accordingly.
+ * @param info Line consisting of layer info.
+ */
 Layer_info_ptr create_layer_info(const char *info) {
     Layer_info_ptr result = malloc_(sizeof(Layer_info), "create_layer_info");
     result->layers = create_hash_map((unsigned int (*)(const void *, int)) hash_function_view_layer_type,
@@ -94,6 +102,14 @@ Layer_info_ptr create_layer_info2() {
     return result;
 }
 
+/**
+ * Changes the given layer info with the given string layer value. For all layers new layer object is created and
+ * replaces the original object. For turkish layer, it also destroys inflectional_group, part_of_speech,
+ * meta_morpheme, meta_morpheme_moved and semantics layers. For persian layer, it also destroys the semantics layer.
+ * @param layer_info Current layer info object
+ * @param view_layer Layer name.
+ * @param layer_value New layer value.
+ */
 void set_layer_data(Layer_info_ptr layer_info, View_layer_type view_layer, const char *layer_value) {
     switch (view_layer){
         case PERSIAN_WORD:
@@ -142,6 +158,11 @@ void set_layer_data(Layer_info_ptr layer_info, View_layer_type view_layer, const
     }
 }
 
+/**
+ * Updates the inflectional_group and part_of_speech layers according to the given parse.
+ * @param layer_info Current layer info object
+ * @param parse New parse to update layers.
+ */
 void set_morphological_analysis(Layer_info_ptr layer_info, const Morphological_parse *parse) {
     char* parse_string = morphological_parse_to_string(parse);
     hash_map_insert(layer_info->layers, create_view_layer_type(INFLECTIONAL_GROUP), create_morphological_analysis_layer(parse_string));
@@ -149,12 +170,23 @@ void set_morphological_analysis(Layer_info_ptr layer_info, const Morphological_p
     free_(parse_string);
 }
 
+/**
+ * Updates the metamorpheme layer according to the given parse.
+ * @param layer_info Current layer info object
+ * @param parse NEw parse to update layer.
+ */
 void set_meta_morphemes(Layer_info_ptr layer_info, const Metamorphic_parse *parse) {
     char* parse_string = metamorphic_parse_to_string(parse);
     hash_map_insert(layer_info->layers, create_view_layer_type(META_MORPHEME), create_meta_morpheme_layer(parse_string));
     free_(parse_string);
 }
 
+/**
+ * Checks if the given layer exists.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer name
+ * @return True if the layer exists, false otherwise.
+ */
 bool layer_exists(Layer_info_ptr layer_info, View_layer_type layer_type) {
     View_layer_type_ptr layer_ptr = create_view_layer_type(layer_type);
     bool result = hash_map_contains(layer_info->layers, layer_ptr);
@@ -162,6 +194,12 @@ bool layer_exists(Layer_info_ptr layer_info, View_layer_type layer_type) {
     return result;
 }
 
+/**
+ * Returns the word layer for the given layer type.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer name
+ * @return Word layer for the given layer type
+ */
 Word_layer_ptr get_layer(Layer_info_ptr layer_info, View_layer_type layer_type) {
     View_layer_type_ptr layer_ptr = create_view_layer_type(layer_type);
     Word_layer_ptr result = hash_map_get(layer_info->layers, layer_ptr);
@@ -169,6 +207,18 @@ Word_layer_ptr get_layer(Layer_info_ptr layer_info, View_layer_type layer_type) 
     return result;
 }
 
+/**
+ * Two level layer check method. For turkish, persian and english_semantics layers, if the layer does not exist,
+ * returns english layer. For part_of_speech, inflectional_group, meta_morpheme, semantics, propbank, shallow_parse,
+ * english_propbank layers, if the layer does not exist, it checks turkish layer. For meta_morpheme_moved, if the
+ * layer does not exist, it checks meta_morpheme layer.
+ * @param layer_info Current layer info object
+ * @param view_layer Layer to be checked.
+ * @return Returns the original layer if the layer exists. For turkish, persian and english_semantics layers, if the
+ * layer  does not exist, returns english layer. For part_of_speech, inflectional_group, meta_morpheme, semantics,
+ * propbank,  shallow_parse, english_propbank layers, if the layer does not exist, it checks turkish layer
+ * recursively. For meta_morpheme_moved, if the layer does not exist, it checks meta_morpheme layer recursively.
+ */
 View_layer_type check_layer(Layer_info_ptr layer_info, View_layer_type view_layer) {
     View_layer_type result = view_layer;
     switch (view_layer){
@@ -201,6 +251,11 @@ View_layer_type check_layer(Layer_info_ptr layer_info, View_layer_type view_laye
     return result;
 }
 
+/**
+ * Returns number of words in the Turkish or Persian layer, whichever exists.
+ * @param layer_info Current layer info object
+ * @return Number of words in the Turkish or Persian layer, whichever exists.
+ */
 int get_number_of_words(Layer_info_ptr layer_info) {
     Word_layer_ptr layer = NULL;
     if (layer_exists(layer_info, TURKISH_WORD)){
@@ -222,6 +277,13 @@ void free_layer_info(Layer_info_ptr layer_info) {
     free_(layer_info);
 }
 
+/**
+ * Returns the layer value at the given index.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer for which the value at the given word index will be returned.
+ * @param index Word Position of the layer value.
+ * @return Layer info at word position index for a multiword layer.
+ */
 void* get_multi_word_at(Layer_info_ptr layer_info,
                         View_layer_type layer_type,
                         int index) {
@@ -240,10 +302,21 @@ void* get_multi_word_at(Layer_info_ptr layer_info,
     return NULL;
 }
 
+/**
+ * Layers may contain multiple Turkish words. This method returns the Turkish word at position index.
+ * @param layer_info Current layer info object
+ * @param index Position of the Turkish word.
+ * @return The Turkish word at position index.
+ */
 char *get_turkish_word_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, TURKISH_WORD, index);
 }
 
+/**
+ * Returns number of meanings in the Turkish layer.
+ * @param layer_info Current layer info object
+ * @return Number of meanings in the Turkish layer.
+ */
 int get_number_of_meanings(Layer_info_ptr layer_info) {
     if (layer_exists(layer_info, SEMANTICS)){
         return get_layer(layer_info, SEMANTICS)->items->size;
@@ -252,14 +325,33 @@ int get_number_of_meanings(Layer_info_ptr layer_info) {
     }
 }
 
+/**
+ * Layers may contain multiple semantic information corresponding to multiple Turkish words. This method returns
+ * the sense id at position index.
+ * @param layer_info Current layer info object
+ * @param index Position of the Turkish word.
+ * @return The Turkish sense id at position index.
+ */
 char *get_semantic_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, SEMANTICS, index);
 }
 
+/**
+ * Layers may contain multiple shallow parse information corresponding to multiple Turkish words. This method
+ * returns the shallow parse tag at position index.
+ * @param layer_info Current layer info object
+ * @param index Position of the Turkish word.
+ * @return The shallow parse tag at position index.
+ */
 char *get_shallow_parse_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, SHALLOW_PARSE, index);
 }
 
+/**
+ * Returns the Turkish PropBank argument info.
+ * @param layer_info Current layer info object
+ * @return Turkish PropBank argument info.
+ */
 Argument_ptr get_layer_argument(Layer_info_ptr layer_info) {
     if (layer_exists(layer_info, PROPBANK)){
         Word_layer_ptr argument_layer = get_layer(layer_info, PROPBANK);
@@ -269,18 +361,44 @@ Argument_ptr get_layer_argument(Layer_info_ptr layer_info) {
     }
 }
 
+/**
+ * A word may have multiple English propbank info. This method returns the English PropBank argument info at
+ * position index.
+ * @param layer_info Current layer info object
+ * @return English PropBank argument info at position index.
+ */
 Argument_ptr get_argument_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, ENGLISH_PROPBANK, index);
 }
 
+/**
+ * Layers may contain multiple morphological parse information corresponding to multiple Turkish words. This method
+ * returns the morphological parse at position index.
+ * @param layer_info Current layer info object
+ * @param index Position of the Turkish word.
+ * @return The morphological parse at position index.
+ */
 Morphological_parse_ptr get_morphological_parse_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, INFLECTIONAL_GROUP, index);
 }
 
+/**
+ * Layers may contain multiple metamorphic parse information corresponding to multiple Turkish words. This method
+ * returns the metamorphic parse at position index.
+ * @param layer_info Current layer info object
+ * @param index Position of the Turkish word.
+ * @return The metamorphic parse at position index.
+ */
 Metamorphic_parse_ptr get_metamorphic_parse_at(Layer_info_ptr layer_info, int index) {
     return get_multi_word_at(layer_info, META_MORPHEME, index);
 }
 
+/**
+ * For layers with multiple item information, this method returns total items in that layer.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer name
+ * @return Total items in the given layer.
+ */
 int get_layer_size(Layer_info_ptr layer_info, View_layer_type layer_type) {
     switch (layer_type) {
         case META_MORPHEME:
@@ -294,6 +412,11 @@ int get_layer_size(Layer_info_ptr layer_info, View_layer_type layer_type) {
     }
 }
 
+/**
+ * Returns the string form of all layer information except part_of_speech layer.
+ * @param layer_info Current layer info object
+ * @return The string form of all layer information except part_of_speech layer.
+ */
 char *get_layer_description(Layer_info_ptr layer_info) {
     char tmp[MAX_WORD_LENGTH] = "";
     Array_list_ptr list = value_list(layer_info->layers);
@@ -306,6 +429,12 @@ char *get_layer_description(Layer_info_ptr layer_info) {
     return clone_string(tmp);
 }
 
+/**
+ * Returns the layer info for the given layer.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer name.
+ * @return Layer info for the given layer.
+ */
 char *get_layer_data(Layer_info_ptr layer_info, View_layer_type layer_type) {
     if (layer_exists(layer_info, layer_type)){
         return get_layer(layer_info, layer_type)->layer_value;
@@ -314,42 +443,83 @@ char *get_layer_data(Layer_info_ptr layer_info, View_layer_type layer_type) {
     }
 }
 
+/**
+ * Returns the layer info for the given layer, if that layer exists. Otherwise, it returns the fallback layer info
+ * determined by the checkLayer.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer name
+ * @return Layer info for the given layer if it exists. Otherwise, it returns the fallback layer info determined by
+ * the checkLayer.
+ */
 char *get_robust_layer_data(Layer_info_ptr layer_info, View_layer_type layer_type) {
     layer_type = check_layer(layer_info, layer_type);
     return get_layer_data(layer_info, layer_type);
 }
 
+/**
+ * Removes the given layer from hash map.
+ * @param layer_info Current layer info object
+ * @param layer_type Layer to be removed.
+ */
 void remove_layer(Layer_info_ptr layer_info, View_layer_type layer_type) {
     View_layer_type_ptr layer_ptr = create_view_layer_type(layer_type);
     hash_map_remove(layer_info->layers, layer_ptr, (void (*)(void *)) free_word_layer);
     free_(layer_ptr);
 }
 
+/**
+ * Removes metamorpheme and metamorphemesmoved layers.
+ * @param layer_info Current layer info object
+ */
 void meta_morpheme_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, META_MORPHEME);
     remove_layer(layer_info, META_MORPHEME_MOVED);
 }
 
+/**
+ * Removes English layer.
+ * @param layer_info Current layer info object
+ */
 void english_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, ENGLISH_WORD);
 }
 
+/**
+ * Removes the dependency layer.
+ * @param layer_info Current layer info object
+ */
 void dependency_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, DEPENDENCY);
 }
 
+/**
+ * Removed metamorphemesmoved layer.
+ * @param layer_info Current layer info object
+ */
 void meta_morphemes_moved_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, META_MORPHEME_MOVED);
 }
 
+/**
+ * Removes the Turkish semantic layer.
+ * @param layer_info Current layer info object
+ */
 void semantic_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, SEMANTICS);
 }
 
+/**
+ * Removes the English semantic layer.
+ * @param layer_info Current layer info object
+ */
 void english_semantic_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, ENGLISH_SEMANTICS);
 }
 
+/**
+ * Removes the morphological analysis, part of speech, metamorpheme, and metamorphemesmoved layers.
+ * @param layer_info Current layer info object
+ */
 void morphological_analysis_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, INFLECTIONAL_GROUP);
     remove_layer(layer_info, PART_OF_SPEECH);
@@ -357,21 +527,28 @@ void morphological_analysis_clear(Layer_info_ptr layer_info) {
     remove_layer(layer_info, META_MORPHEME_MOVED);
 }
 
-Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int wordIndex) {
+/**
+ * Converts layer info of the word at position word_index to an AnnotatedWord. Layers are converted to their
+ * counterparts in the AnnotatedWord.
+ * @param layer_info Current layer info object
+ * @param word_index Index of the word to be converted.
+ * @return Converted annotatedWord
+ */
+Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int word_index) {
     char* st;
-    Annotated_word_ptr word = create_annotated_word(get_turkish_word_at(layer_info, wordIndex));
+    Annotated_word_ptr word = create_annotated_word(get_turkish_word_at(layer_info, word_index));
     if (layer_exists(layer_info, INFLECTIONAL_GROUP)){
-        st = morphological_parse_to_string(get_morphological_parse_at(layer_info, wordIndex));
+        st = morphological_parse_to_string(get_morphological_parse_at(layer_info, word_index));
         word->parse = create_morphological_parse(st);
         free_(st);
     }
     if (layer_exists(layer_info, META_MORPHEME)){
-        st = metamorphic_parse_to_string(get_metamorphic_parse_at(layer_info, wordIndex));
+        st = metamorphic_parse_to_string(get_metamorphic_parse_at(layer_info, word_index));
         word->metamorphic_parse = create_metamorphic_parse(st);
         free_(st);
     }
     if (layer_exists(layer_info, SEMANTICS)){
-        word->semantic = str_copy(word->semantic, get_semantic_at(layer_info, wordIndex));
+        word->semantic = str_copy(word->semantic, get_semantic_at(layer_info, word_index));
     }
     if (layer_exists(layer_info, NER)){
         word->named_entity_type = get_named_entity_type(get_layer_data(layer_info, NER));
@@ -382,7 +559,7 @@ Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int wordIndex) {
         free_(st);
     }
     if (layer_exists(layer_info, SHALLOW_PARSE)){
-        word->shallow_parse = str_copy(word->shallow_parse, get_shallow_parse_at(layer_info, wordIndex));
+        word->shallow_parse = str_copy(word->shallow_parse, get_shallow_parse_at(layer_info, word_index));
     }
     return word;
 }
