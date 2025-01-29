@@ -555,7 +555,7 @@ Annotated_word_ptr to_annotated_word(Layer_info_ptr layer_info, int word_index) 
     }
     if (layer_exists(layer_info, PROPBANK)){
         st = argument_to_string(get_layer_argument(layer_info));
-        word->argument = create_argument2(st);
+        word->argument_list = create_argument_list(st);
         free_(st);
     }
     if (layer_exists(layer_info, SHALLOW_PARSE)){
