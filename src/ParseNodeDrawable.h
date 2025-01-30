@@ -22,11 +22,11 @@ typedef struct parse_node_drawable Parse_node_drawable;
 typedef Parse_node_drawable * Parse_node_drawable_ptr;
 
 Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr parent,
-                                                   char* line,
+                                                   const char* line,
                                                    bool is_leaf,
                                                    int depth);
 
-Parse_node_drawable_ptr create_parse_node_drawable2(char* line);
+Parse_node_drawable_ptr create_parse_node_drawable2(const char* line);
 
 void free_parse_node_drawable(Parse_node_drawable_ptr parse_node);
 
@@ -38,9 +38,9 @@ void clear_layer(Parse_node_drawable_ptr parse_node, View_layer_type layer_type)
 
 void clear_data(Parse_node_drawable_ptr parse_node);
 
-void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, char* data);
+void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, const char* data);
 
-void set_data(Parse_node_drawable_ptr parse_node, char* data);
+void set_data(Parse_node_drawable_ptr parse_node, const char* data);
 
 char* get_parse_node_layer_data(Parse_node_drawable_ptr parse_node, View_layer_type layer_type);
 

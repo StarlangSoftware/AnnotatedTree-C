@@ -17,7 +17,7 @@
  * @param depth Depth of the node.
  */
 Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr parent,
-                                                   char *line,
+                                                   const char *line,
                                                    bool is_leaf,
                                                    int depth) {
     Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable), "create_parse_node_drawable");
@@ -67,7 +67,7 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
     return result;
 }
 
-Parse_node_drawable_ptr create_parse_node_drawable2(char *line) {
+Parse_node_drawable_ptr create_parse_node_drawable2(const char *line) {
     Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable), "create_parse_node_drawable2");
     result->depth = 0;
     result->parent = NULL;
@@ -122,7 +122,7 @@ void clear_data(Parse_node_drawable_ptr parse_node) {
  * @param parse_node Current parse node object
  * @param data New data field.
  */
-void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, char *data) {
+void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, const char *data) {
     free_(parse_node->data);
     parse_node->data = str_copy(parse_node->data, data);
     if (parse_node->layers != NULL){
@@ -137,7 +137,7 @@ void set_data_and_clear_layers(Parse_node_drawable_ptr parse_node, char *data) {
  * @param parse_node Current parse node object
  * @param data Data to be set.
  */
-void set_data(Parse_node_drawable_ptr parse_node, char *data) {
+void set_data(Parse_node_drawable_ptr parse_node, const char *data) {
     if (parse_node->layers == NULL){
         free_(parse_node->data);
         parse_node->data = str_copy(parse_node->data, data);
@@ -227,7 +227,7 @@ bool parse_node_layer_exists(Parse_node_drawable_ptr parse_node, View_layer_type
 /**
  * Checks if all nodes in the subtree rooted with this node has annotation with the given layer.
  * @param parse_node Current parse node object
- * @param viewLayerType Layer name
+ * @param layer_type Layer name
  * @return True if all nodes in the subtree rooted with this node has annotation with the given layer, false
  * otherwise.
  */

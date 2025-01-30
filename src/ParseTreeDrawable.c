@@ -69,6 +69,7 @@ Parse_tree_drawable_ptr create_parse_tree_drawable4(const char *path, File_descr
 /**
  * Reads the parse tree from the given line. It sets the root node which calls ParseNodeDrawable constructor
  * recursively.
+ * @param parse_tree Current parse tree object
  * @param file_name Line containing the definition of the tree.
  */
 void read_from_file(Parse_tree_drawable_ptr parse_tree, const char *file_name) {
