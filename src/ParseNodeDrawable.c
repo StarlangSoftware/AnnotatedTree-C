@@ -27,7 +27,7 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
     result->children = create_array_list();
     result->layers = NULL;
     result->data = NULL;
-    char childLine[MAX_LINE_LENGTH] = "";
+    char childLine[MAX_LINE_LENGTH] = "", tmp[MAX_LINE_LENGTH];
     if (is_leaf){
         if (!str_contains(line, "{")){
             result->data = str_copy(result->data, line);
@@ -46,7 +46,8 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
         } else {
             for (int i = startPos + 1; i < strlen(line); i++){
                 if (line[i] != ' ' || parenthesisCount > 0){
-                    sprintf(childLine, "%s%c", childLine, line[i]);
+                    sprintf(tmp, "%s%c", childLine, line[i]);
+                    strcpy(childLine, tmp);
                 }
                 if (line[i] == '('){
                     parenthesisCount++;
@@ -274,7 +275,7 @@ bool is_dummy_node2(Parse_node_drawable_ptr parse_node) {
  * @return String version of the subtree rooted with this node.
  */
 char *to_turkish_sentence(Parse_node_drawable_ptr parse_node) {
-    char tmp[MAX_WORD_LENGTH];
+    char tmp[MAX_WORD_LENGTH], tmp1[MAX_WORD_LENGTH];
     if (parse_node->children->size == 0){
         if (get_parse_node_layer_data(parse_node, TURKISH_WORD) != NULL && !is_dummy_node2(parse_node)){
             sprintf(tmp, " %s", get_parse_node_layer_data(parse_node, TURKISH_WORD));
@@ -287,7 +288,8 @@ char *to_turkish_sentence(Parse_node_drawable_ptr parse_node) {
         for (int i = 0; i < parse_node->children->size; i++){
             Parse_node_drawable_ptr child = array_list_get(parse_node->children, i);
             char* st = to_turkish_sentence(child);
-            sprintf(tmp, "%s%s", tmp, st);
+            sprintf(tmp1, "%s%s", tmp, st);
+            strcpy(tmp, tmp1);
             free_(st);
         }
         return clone_string(tmp);

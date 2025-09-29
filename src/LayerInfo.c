@@ -418,11 +418,12 @@ int get_layer_size(Layer_info_ptr layer_info, View_layer_type layer_type) {
  * @return The string form of all layer information except part_of_speech layer.
  */
 char *get_layer_description(Layer_info_ptr layer_info) {
-    char tmp[MAX_WORD_LENGTH] = "";
+    char tmp[MAX_WORD_LENGTH] = "", tmp1[MAX_WORD_LENGTH];
     Array_list_ptr list = value_list(layer_info->layers);
     for (int i = 0; i < list->size; i++){
         char* description = get_word_layer_description(array_list_get(list, i));
-        sprintf(tmp, "%s%s", tmp, description);
+        sprintf(tmp1, "%s%s", tmp, description);
+        strcpy(tmp, tmp1);
         free_(description);
     }
     free_array_list(list, NULL);

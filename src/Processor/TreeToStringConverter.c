@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include "string.h"
 #include <Memory/Memory.h>
 #include "TreeToStringConverter.h"
 #include "LeafConverter/LeafToLanguageConverter.h"
@@ -27,10 +28,11 @@ char *convert_to_string(Parse_node_drawable_ptr parse_node, View_layer_type laye
                 return leaf_to_root_form_converter(parse_node);
         }
     } else {
-        char st[MAX_WORD_LENGTH] = "";
+        char st[MAX_WORD_LENGTH] = "", tmp[MAX_WORD_LENGTH];
         for (int i = 0; i < parse_node->children->size; i++){
             char* child_string = convert_to_string(array_list_get(parse_node->children, i), layer_type);
-            sprintf(st, "%s%s", st, child_string);
+            sprintf(tmp, "%s%s", st, child_string);
+            strcpy(st, tmp);
             free_(child_string);
         }
         return clone_string(st);
