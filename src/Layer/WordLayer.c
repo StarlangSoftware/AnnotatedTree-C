@@ -41,7 +41,7 @@ void free_word_layer(Word_layer_ptr word_layer) {
  * @return New metamorpheme or metamorphemesmoved layer
  */
 Word_layer_ptr create_morpheme_layer(const char *layer_value, const char *layer_name) {
-    Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_morpheme_layer");
+    Word_layer_ptr result = malloc_(sizeof(Word_layer));
     result->layer_name = str_copy(result->layer_name, layer_name);
     result->layer_value = str_copy(result->layer_value, layer_value);
     if (layer_value != NULL){

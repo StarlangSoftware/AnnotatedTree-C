@@ -31,7 +31,7 @@
  * @param info Line consisting of layer info.
  */
 Layer_info_ptr create_layer_info(const char *info) {
-    Layer_info_ptr result = malloc_(sizeof(Layer_info), "create_layer_info");
+    Layer_info_ptr result = malloc_(sizeof(Layer_info));
     result->layers = create_hash_map((unsigned int (*)(const void *, int)) hash_function_view_layer_type,
                                      (int (*)(const void *, const void *)) compare_view_layer_type);
     Array_list_ptr splitLayers = str_split3(info, "[{}]");
@@ -96,7 +96,7 @@ Layer_info_ptr create_layer_info(const char *info) {
 
 
 Layer_info_ptr create_layer_info2() {
-    Layer_info_ptr result = malloc_(sizeof(Layer_info), "create_layer_info");
+    Layer_info_ptr result = malloc_(sizeof(Layer_info));
     result->layers = create_hash_map((unsigned int (*)(const void *, int)) hash_function_view_layer_type,
                                      (int (*)(const void *, const void *)) compare_view_layer_type);
     return result;
@@ -291,9 +291,11 @@ void* get_multi_word_at(Layer_info_ptr layer_info,
     if (hash_map_contains(layer_info->layers, layer_ptr)){
         Word_layer_ptr word_layer = hash_map_get(layer_info->layers, layer_ptr);
         if (word_layer->items != NULL && index < word_layer->items->size && index >= 0){
+            free_(layer_ptr);
             return array_list_get(word_layer->items, index);
         } else {
             if (layer_type == SEMANTICS){
+                free_(layer_ptr);
                 return array_list_get(word_layer->items, word_layer->items->size - 1);
             }
         }

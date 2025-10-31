@@ -16,7 +16,7 @@
  * @param file_description File description that contains the path, index and extension information.
  */
 Parse_tree_drawable_ptr create_parse_tree_drawable(File_description_ptr file_description) {
-    Parse_tree_drawable_ptr result = malloc_(sizeof(Parse_tree_drawable), "create_parse_tree_drawable");
+    Parse_tree_drawable_ptr result = malloc_(sizeof(Parse_tree_drawable));
     result->file_description = file_description;
     char* file_name = get_file_name(file_description);
     read_from_file(result, file_name);
@@ -127,7 +127,7 @@ int compare_parse_tree_drawable(const Parse_tree_drawable *parse_tree1, const Pa
 }
 
 Parse_tree_ptr generate_parse_tree(const Parse_tree_drawable *parse_tree, bool surface_form) {
-    Parse_tree_ptr result = create_parse_tree2(create_parse_node(clone_string(parse_tree->root->data)));
+    Parse_tree_ptr result = create_parse_tree2(create_parse_node(NULL));
     generate_parse_node(parse_tree->root, result->root, surface_form);
     return result;
 }

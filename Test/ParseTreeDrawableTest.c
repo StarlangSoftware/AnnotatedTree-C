@@ -5,6 +5,8 @@
 #include <TreeBank.h>
 #include <stdio.h>
 #include <string.h>
+#include <Memory/Memory.h>
+
 #include "../src/TreeBankDrawable.h"
 #include "../src/ParseTreeDrawable.h"
 
@@ -16,6 +18,7 @@ void check_depth(Tree_bank_ptr tree_bank, int index, int depth){
 }
 
 int main(){
+    start_memory_check();
     Tree_bank_ptr tree_bank = create_tree_bank_drawable("../trees");
     check_depth(tree_bank, 0, 5);
     check_depth(tree_bank, 1, 5);
@@ -44,4 +47,5 @@ int main(){
     free_parse_tree(parse_tree2);
     free_parse_tree_drawable(parse_tree);
     free_tree_bank_drawable(tree_bank);
+    end_memory_check();
 }

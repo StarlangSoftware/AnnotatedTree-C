@@ -14,7 +14,7 @@
  * @param folder Folder where all parseTrees reside.
  */
 Tree_bank_ptr create_tree_bank_drawable(const char *folder) {
-    Tree_bank_ptr result = malloc_(sizeof(Tree_bank), "create_tree_bank_drawable");
+    Tree_bank_ptr result = malloc_(sizeof(Tree_bank));
     result->parse_trees = create_array_list();
     DIR *d;
     struct dirent *dir;

@@ -15,7 +15,7 @@
  *                   for every word.
  */
 Word_layer_ptr create_shallow_parse_layer(const char *layer_value) {
-    Word_layer_ptr result = malloc_(sizeof(Word_layer), "create_shallow_parse_layer");
+    Word_layer_ptr result = malloc_(sizeof(Word_layer));
     result->layer_name = str_copy(result->layer_name, "shallowParse");
     result->layer_value = str_copy(result->layer_value, layer_value);
     if (layer_value != NULL){

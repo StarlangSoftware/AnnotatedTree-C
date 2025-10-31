@@ -20,7 +20,7 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
                                                    const char *line,
                                                    bool is_leaf,
                                                    int depth) {
-    Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable), "create_parse_node_drawable");
+    Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable));
     int parenthesisCount = 0;
     result->depth = depth;
     result->parent = parent;
@@ -69,7 +69,7 @@ Parse_node_drawable_ptr create_parse_node_drawable(Parse_node_drawable_ptr paren
 }
 
 Parse_node_drawable_ptr create_parse_node_drawable2(const char *line) {
-    Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable), "create_parse_node_drawable2");
+    Parse_node_drawable_ptr result = malloc_(sizeof(Parse_node_drawable));
     result->depth = 0;
     result->parent = NULL;
     result->data = str_copy(result->data, line);
@@ -179,10 +179,10 @@ void free_parse_node_drawable(Parse_node_drawable_ptr parse_node) {
     }
     free_array_list(parse_node->children, NULL);
     free_(parse_node->data);
-    free_(parse_node);
     if (parse_node->layers != NULL){
         free_layer_info(parse_node->layers);
     }
+    free_(parse_node);
 }
 
 /**
