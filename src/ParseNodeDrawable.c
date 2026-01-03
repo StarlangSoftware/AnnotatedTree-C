@@ -310,7 +310,7 @@ void generate_parse_node(Parse_node_drawable_ptr parse_node_drawable,
         if (surface_form){
             parse_node->data = clone_string(get_parse_node_layer_data(parse_node_drawable, TURKISH_WORD));
         } else {
-            parse_node->data = clone_string(get_morphological_parse_at(parse_node_drawable->layers, 0)->root);
+            parse_node->data = clone_string(get_morphological_parse_at(parse_node_drawable->layers, 0)->root->name);
         }
     } else {
         parse_node->data = clone_string(parse_node_drawable->data);

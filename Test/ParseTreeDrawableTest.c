@@ -34,14 +34,14 @@ int main(){
     Parse_tree_ptr parse_tree2 = generate_parse_tree(parse_tree, true);
     String_ptr st = parse_tree_to_string(parse_tree2);
     if (strcmp(st->s, "(S (NP (NP (ADJP (ADJP yeni) (ADJP Büyük))  (NP yasada))  (NP (ADJP karmaşık) (NP dil)) )  (VP (NP savaşı) (VP bulandırmıştır))  (. .)) ") != 0){
-        printf("Error\n");
+        printf("Error in first\n");
     }
     free_string_ptr(st);
     free_parse_tree(parse_tree2);
     parse_tree2 = generate_parse_tree(parse_tree, false);
     st = parse_tree_to_string(parse_tree2);
     if (strcmp(st->s, "(S (NP (NP (ADJP (ADJP yeni) (ADJP büyük))  (NP yasa))  (NP (ADJP karmaşık) (NP dil)) )  (VP (NP savaş) (VP bulan))  (. .)) ") != 0){
-        printf("Error\n");
+        printf("Error in second\n");
     }
     free_string_ptr(st);
     free_parse_tree(parse_tree2);
